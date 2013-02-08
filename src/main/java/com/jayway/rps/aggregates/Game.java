@@ -1,5 +1,6 @@
 package com.jayway.rps.aggregates;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -15,7 +16,10 @@ import com.jayway.rps.structs.commands.MakeChoice;
 import com.jayway.rps.structs.events.ChoiceMade;
 import com.jayway.rps.structs.events.GameCreated;
 import com.jayway.rps.structs.events.GameStarted;
+import com.jayway.rps.structs.events.GameWon;
 import com.jayway.rps.structs.events.RoundStarted;
+import com.jayway.rps.structs.events.RoundTied;
+import com.jayway.rps.structs.events.RoundWon;
 
 public class Game {
 
@@ -23,6 +27,7 @@ public class Game {
 	private String player1Id;
 	private String player2Id;
 	private int roundNumber;
+	private int requiredRounds;
 
 	private int player1Wins;
 	private int player2Wins;
@@ -34,14 +39,16 @@ public class Game {
 	public void handle(GameCreated e) throws Exception {
 		id = e.gameId;
 		player1Id = e.playerId;
+		player1Wins = 0;
+		requiredRounds = e.requiredWins;
 	}
 
 	@CommandHandler
 	public List<? extends Event> handle(CreateGame c) throws Exception {
 
 		if (id == null) {
-			return Arrays
-					.asList(new GameCreated(UUID.randomUUID(), c.playerId));
+			return Arrays.asList(new GameCreated(UUID.randomUUID(), c.playerId,
+					c.requiredRounds));
 		}
 
 		return Arrays.asList();
@@ -50,11 +57,14 @@ public class Game {
 	@EventHandler
 	public void handle(GameStarted e) throws Exception {
 		player2Id = e.player2Id;
+		player2Wins = 0;
 	}
 
 	@EventHandler
 	public void handle(RoundStarted e) throws Exception {
-		roundNumber = e.roundNumber;
+		roundNumber++;
+		player1Choice = null;
+		player2Choice = null;
 	}
 
 	@CommandHandler
@@ -66,7 +76,7 @@ public class Game {
 
 		if (player2Id == null) {
 			return Arrays.asList(new GameStarted(id, player1Id, player2Id),
-					new RoundStarted(id, 1));
+					new RoundStarted(id));
 		}
 
 		return Arrays.asList();
@@ -79,7 +89,6 @@ public class Game {
 		} else {
 			player2Choice = e.choice;
 		}
-
 	}
 
 	@CommandHandler
@@ -102,16 +111,36 @@ public class Game {
 			p2Choice = c.choice;
 		}
 
-		List<? extends Event> events = Arrays.asList(new ChoiceMade(id,
-				roundNumber, c.playerId, c.choice));
+		List<Event> events = new ArrayList<Event>();
+		events.add(new ChoiceMade(id, roundNumber, c.playerId, c.choice));
 
 		if (p1Choice != null && p2Choice != null) {
-			if (compareChoices(p1Choice, p2Choice) == Result.WIN) {
-
+			Result result = compareChoices(p1Choice, p2Choice);
+			if (result == Result.WIN) {
+				roundWon(events, player1Id);
+			} else if (result == Result.TIE) {
+				events.add(new RoundTied(id, roundNumber));
+				events.add(new RoundStarted(id));
+			} else {
+				roundWon(events, player2Id);
 			}
 		}
 
 		return events;
+	}
+
+	private void roundWon(List<Event> events, String playerId) {
+		events.add(new RoundWon(id, roundNumber, playerId));
+
+		if (player1Wins == requiredRounds - 1 && player1Id.equals(playerId)) {
+			events.add(new GameWon(id, player1Id));
+		} else if (player2Wins == requiredRounds - 1
+				&& player2Id.equals(playerId)) {
+			events.add(new GameWon(id, player2Id));
+		} else {
+			events.add(new RoundStarted(id));
+		}
+
 	}
 
 	static Result compareChoices(Choices choice1, Choices choice2) {
