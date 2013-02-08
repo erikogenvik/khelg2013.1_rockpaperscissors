@@ -1,0 +1,18 @@
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level [%thread] %logger{0} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="com.jayway" level="DEBUG"/>
+    <logger name="org.springframework" level="INFO"/>
+
+    <!-- suppress annoying log messages that are actually handled by Spring Security -->
+    <logger name="com.sun.jersey.spi.container.ContainerResponse" level="OFF"/>
+
+    <root level="WARN">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+</configuration>
