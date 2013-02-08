@@ -4,15 +4,24 @@
 	<div ng-show="noGame">
 		<button id="btnCreateGame" ng-click="createGame()">Create
 			Game</button>
-		<label for="gameUri">Game URI</label> <input id="gameUri" />
-		<button id="btnJoinGame">Join game</button>
+		<label for="gameUri">Game URI</label> <input ng-model="joinUri" />
+		<button id="btnJoinGame" ng-click="join()">Join game</button>
+	</div>
+	<div ng-show="waitingForPlayer">
+		Waiting for second player. To joind, use url {{joinUri}}
 	</div>
 	<div ng-show="needToDeal">
 		<select id="choice" ng-model="choice">
-			<option id="ROCK">rock</option>
-			<option id="PAPER">paper</option>
-			<option id="SCISSOR">scissor</option>
+			<option value="ROCK">rock</option>
+			<option value="PAPER">paper</option>
+			<option value="SCISSOR">scissor</option>
 		</select>
 		<button ng-click="deal()">Deal</button>
+	</div>
+	<div ng-show="youWon">
+		<h1>You won!</h1>
+	</div>
+	<div ng-show="youLost">
+		<h1>You lost!</h1>
 	</div>
 </div>

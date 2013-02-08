@@ -62,22 +62,26 @@ public class GameResource {
 				.getAuthentication();
 
 		appService.handle(new JoinGame(id, authentication.getName()));
-		return Response.created(
-				UriBuilder.fromResource(GameResource.class).path(id.toString())
-						.build()).build();
+			return Response.created(
+				uriInfo.getBaseUriBuilder().path(GameResource.class)
+						.path(id.toString()).build()).build();
 	}
 
 	@POST
 	@Path("{id}/choice")
 	public Response choice(@PathParam("id") UUID id,
 			@FormParam("choice") Choices choice, @Context UriInfo uriInfo) {
+
+		if (choice == null) {
+			throw new IllegalArgumentException();
+		}
 		Authentication authentication = SecurityContextHolder.getContext()
 				.getAuthentication();
 
 		appService.handle(new MakeChoice(id, authentication.getName(), choice));
 		return Response.ok(
-				UriBuilder.fromResource(GameResource.class).path(id.toString())
-						.build()).build();
+				uriInfo.getBaseUriBuilder().path(GameResource.class)
+						.path(id.toString()).build()).build();
 	}
 
 	@GET

@@ -61,11 +61,16 @@ function RestrictedCtrl($scope, $http, $location) {
 
 
 
-function PlayCtrl($scope, $http, $location) {
+function PlayCtrl($scope, $http, $timeout) {
     $scope.noGame = true;
     $scope.hasGame = false;
+    $scope.waitingForPlayer=false;
     $scope.gameUri = null;
     $scope.needToDeal = false;
+    $scope.youWon = false;
+    $scope.youLost = false;
+    
+    
     
     $scope.getGameInfo = function() {
     	$http.get($scope.gameUri)
@@ -83,26 +88,42 @@ function PlayCtrl($scope, $http, $location) {
     	  $http.get($scope.gameUri)
           .success(function (data, status, headers) {
         	  var me = data.me;
-        	  if (me == data.details.player1Id) {
-        		  if (!data.details.player1Dealt) {
-        			  $scope.needToDeal = true;
-        		  } else {
-        			  $scope.needToDeal = false;
-        		  }
+        	  if (data.details.player2Id == null) {
+        		  $scope.waitingForPlayer = true;
+        		  $scope.joinUri = data.join;
         	  } else {
-        		  if (!data.details.player2Dealt) {
-        			  $scope.needToDeal = true;
-        		  } else {
+        		  $scope.waitingForPlayer = false;
+        		  if (data.details.winner != null) {
         			  $scope.needToDeal = false;
+        			  if (data.details.winner == me) {
+        				  $scope.youWon = true;
+        			  } else {
+        				  $scope.youLost = true;
+        			  }
+        		  } else {
+                	  if (me == data.details.player1Id) {
+                		  
+                		  if (!data.details.player1Dealt) {
+                			  $scope.needToDeal = true;
+                		  } else {
+                			  $scope.needToDeal = false;
+                		  }
+                	  } else {
+                		  if (!data.details.player2Dealt) {
+                			  $scope.needToDeal = true;
+                		  } else {
+                			  $scope.needToDeal = false;
+                		  }
+                	  }
         		  }
         	  }
+        	  $timeout(poll, 1000);
           })
           .error(function (data, status) {
               alert(data);
           });
     	  
     	  
-    	  $timeout(poll, 1000);
       };
       poll();
     };
@@ -128,13 +149,28 @@ function PlayCtrl($scope, $http, $location) {
     
     $scope.deal = function(choice)
     {
-        $http.post($scope.gameUri+"/choice", "choice: " + $scope.choice, {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
+       	var xsrf = $.param({choice: $scope.choice.toUpperCase()});
+       	$http.post($scope.gameUri+"/choice", xsrf, {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
         .success(function (data, status, headers) {
-        	alert("You've dealt a blow!");
+//        	alert("You've dealt a blow!");
         })
         .error(function (data, status) {
             alert(data);
         });
     };
+    
+    $scope.join = function() {
+       	$http.post($scope.joinUri, null, {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
+        .success(function (data, status, headers) {
+        	$scope.hasGame = true;
+        	
+        	$scope.gameUri = headers("Location");
+            $scope.noGame = false;
+            startPolling();
+        })
+        .error(function (data, status) {
+            alert(data);
+        });
+    }
     
 }
