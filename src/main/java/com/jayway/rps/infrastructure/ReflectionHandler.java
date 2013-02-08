@@ -3,6 +3,8 @@ package com.jayway.rps.infrastructure;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
+import com.jayway.rps.Handler;
+
 public class ReflectionHandler<A> implements Handler<A> {
 	private final Class<? extends Annotation> handlerAnnotation;
 

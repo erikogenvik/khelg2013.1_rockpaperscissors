@@ -47,7 +47,7 @@ public class Game {
 	public List<? extends Event> handle(CreateGame c) throws Exception {
 
 		if (id == null) {
-			return Arrays.asList(new GameCreated(UUID.randomUUID(), c.playerId,
+			return Arrays.asList(new GameCreated(c.gameId, c.playerId,
 					c.requiredRounds));
 		}
 
