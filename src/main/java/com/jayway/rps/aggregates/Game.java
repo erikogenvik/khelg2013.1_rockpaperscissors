@@ -4,8 +4,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import com.jayway.rps.Choices;
 import com.jayway.rps.CommandHandler;
 import com.jayway.rps.EventHandler;
+import com.jayway.rps.Result;
 import com.jayway.rps.structs.Event;
 import com.jayway.rps.structs.commands.CreateGame;
 import com.jayway.rps.structs.commands.JoinGame;
@@ -25,8 +27,8 @@ public class Game {
 	private int player1Wins;
 	private int player2Wins;
 
-	private String player1Choice;
-	private String player2Choice;
+	private Choices player1Choice;
+	private Choices player2Choice;
 
 	@EventHandler
 	public void handle(GameCreated e) throws Exception {
@@ -78,9 +80,6 @@ public class Game {
 			player2Choice = e.choice;
 		}
 
-		if (player1Choice != null && player2Choice != null) {
-
-		}
 	}
 
 	@CommandHandler
@@ -94,8 +93,34 @@ public class Game {
 			return Arrays.asList();
 		}
 
-		return Arrays.asList(new ChoiceMade(id, roundNumber, c.playerId,
-				c.choice));
+		Choices p1Choice = player1Choice;
+		Choices p2Choice = player2Choice;
+
+		if (c.playerId.equals(player1Id)) {
+			p1Choice = c.choice;
+		} else {
+			p2Choice = c.choice;
+		}
+
+		List<? extends Event> events = Arrays.asList(new ChoiceMade(id,
+				roundNumber, c.playerId, c.choice));
+
+		if (p1Choice != null && p2Choice != null) {
+			if (compareChoices(p1Choice, p2Choice) == Result.WIN) {
+
+			}
+		}
+
+		return events;
+	}
+
+	static Result compareChoices(Choices choice1, Choices choice2) {
+		if (choice1.equals(choice2))
+			return Result.TIE;
+		if (choice1 == Choices.ROCK && choice2 == Choices.SCISSOR) {
+			return Result.WIN;
+		}
+		return Result.LOSE;
 	}
 
 }
