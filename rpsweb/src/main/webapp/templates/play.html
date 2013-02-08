@@ -1,0 +1,18 @@
+<div ng-controller="PlayCtrl" xmlns="http://www.w3.org/1999/html">
+	<h1>Play game!</h1>
+
+	<div ng-show="noGame">
+		<button id="btnCreateGame" ng-click="createGame()">Create
+			Game</button>
+		<label for="gameUri">Game URI</label> <input id="gameUri" />
+		<button id="btnJoinGame">Join game</button>
+	</div>
+	<div ng-show="needToDeal">
+		<select id="choice" ng-model="choice">
+			<option id="ROCK">rock</option>
+			<option id="PAPER">paper</option>
+			<option id="SCISSOR">scissor</option>
+		</select>
+		<button ng-click="deal()">Deal</button>
+	</div>
+</div>

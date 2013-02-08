@@ -6,7 +6,8 @@ angular.module('secureRestSample', []).
             .when('/', { templateUrl: '/templates/home.html'})
             .when('/home', { templateUrl: '/templates/home.html'})
             .when('/restricted', { templateUrl: '/templates/restricted.html', controller: HomeCtrl })
-            .when('/login', { templateUrl: '/templates/login.html', controller: RestrictedCtrl });
+            .when('/login', { templateUrl: '/templates/login.html', controller: RestrictedCtrl })
+        .when('/play', { templateUrl: '/templates/play.html', controller: PlayCtrl });
     })
 
 function RouteCtrl($scope, $http, $location) {
@@ -56,4 +57,84 @@ function RestrictedCtrl($scope, $http, $location) {
             console.log(status);
             if(status == 200) $scope.secretMessage = data;
         })
+}
+
+
+
+function PlayCtrl($scope, $http, $location) {
+    $scope.noGame = true;
+    $scope.hasGame = false;
+    $scope.gameUri = null;
+    $scope.needToDeal = false;
+    
+    $scope.getGameInfo = function() {
+    	$http.get($scope.gameUri)
+        .success(function (data, status, headers) {
+        	alert(data);
+        })
+        .error(function (data, status) {
+            alert(data);
+        });
+    };
+    
+    var self = this;
+    var startPolling = function(){
+      function poll(){
+    	  $http.get($scope.gameUri)
+          .success(function (data, status, headers) {
+        	  var me = data.me;
+        	  if (me == data.details.player1Id) {
+        		  if (!data.details.player1Dealt) {
+        			  $scope.needToDeal = true;
+        		  } else {
+        			  $scope.needToDeal = false;
+        		  }
+        	  } else {
+        		  if (!data.details.player2Dealt) {
+        			  $scope.needToDeal = true;
+        		  } else {
+        			  $scope.needToDeal = false;
+        		  }
+        	  }
+          })
+          .error(function (data, status) {
+              alert(data);
+          });
+    	  
+    	  
+    	  $timeout(poll, 1000);
+      };
+      poll();
+    };
+    
+    
+    $scope.createGame = function()
+    {
+    	var xsrf = $.param({firstTo: 2});
+        $http.post("/api/games",xsrf , {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
+        .success(function (data, status, headers) {
+        	$scope.hasGame = true;
+        	
+        	$scope.gameUri = headers("Location");
+            $scope.noGame = false;
+            startPolling();
+
+        })
+        .error(function (data, status) {
+            alert(data);
+        });
+    };
+    
+    
+    $scope.deal = function(choice)
+    {
+        $http.post($scope.gameUri+"/choice", "choice: " + $scope.choice, {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
+        .success(function (data, status, headers) {
+        	alert("You've dealt a blow!");
+        })
+        .error(function (data, status) {
+            alert(data);
+        });
+    };
+    
 }

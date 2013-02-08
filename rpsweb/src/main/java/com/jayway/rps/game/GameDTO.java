@@ -10,5 +10,6 @@ public class GameDTO {
 	
 	public URI join;
 	public URI choice;
+	public String me;
 
 }

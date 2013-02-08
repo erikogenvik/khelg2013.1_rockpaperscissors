@@ -62,8 +62,9 @@ public class GameResource {
 				.getAuthentication();
 
 		appService.handle(new JoinGame(id, authentication.getName()));
-		return Response.created(uriInfo.getAbsolutePathBuilder().build())
-				.build();
+		return Response.created(
+				UriBuilder.fromResource(GameResource.class).path(id.toString())
+						.build()).build();
 	}
 
 	@POST
@@ -74,13 +75,16 @@ public class GameResource {
 				.getAuthentication();
 
 		appService.handle(new MakeChoice(id, authentication.getName(), choice));
-		return Response.ok(UriBuilder.fromResource(GameResource.class).build())
-				.build();
+		return Response.ok(
+				UriBuilder.fromResource(GameResource.class).path(id.toString())
+						.build()).build();
 	}
 
 	@GET
 	@Path("{id}")
 	public Response getGame(@PathParam("id") UUID id, @Context UriInfo uriInfo) {
+		Authentication authentication = SecurityContextHolder.getContext()
+				.getAuthentication();
 		Entry entry = gameDetails.getGames().get(id);
 		if (entry == null) {
 			return Response.status(Status.NOT_FOUND).build();
@@ -91,10 +95,11 @@ public class GameResource {
 		if (entry.player2Id == null) {
 			dto.join = uriInfo.getAbsolutePathBuilder().path("opponent")
 					.build();
-		} else if (entry.winner == null){
+		} else if (entry.winner == null) {
 			dto.choice = uriInfo.getAbsolutePathBuilder().path("choice")
 					.build();
 		}
+		dto.me = authentication.getName();
 		return Response.ok().entity(dto).build();
 	}
 }

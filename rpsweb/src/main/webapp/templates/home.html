@@ -1,8 +1,8 @@
 <div ng-controller="HomeCtrl">
-    <h1>Home</h1>
+	<h1>Home</h1>
 
-    <p>This sample was develop by:</p>
-    <ul ng-repeat="developer in developers">
-        <li>{{developer.firstName}} {{developer.lastName}}</li>
-    </ul>
+	<span ng-show="isAuthenticated"> <a class="brand" href="#/play">Start
+			game</a>
+	</span>
+
 </div>
