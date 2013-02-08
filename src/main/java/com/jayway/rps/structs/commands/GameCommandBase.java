@@ -1,8 +1,8 @@
-package com.jayway.lab.structs.commands;
+package com.jayway.rps.structs.commands;
 
 import java.util.UUID;
 
-import com.jayway.lab.structs.Command;
+import com.jayway.rps.structs.Command;
 
 public class GameCommandBase implements Command {
 	public final UUID gameId;

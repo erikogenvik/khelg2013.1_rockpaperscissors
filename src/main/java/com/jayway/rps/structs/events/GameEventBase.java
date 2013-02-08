@@ -1,8 +1,8 @@
-package com.jayway.lab.structs.events;
+package com.jayway.rps.structs.events;
 
 import java.util.UUID;
 
-import com.jayway.lab.structs.Event;
+import com.jayway.rps.structs.Event;
 
 public class GameEventBase implements Event {
 	public final UUID gameId;

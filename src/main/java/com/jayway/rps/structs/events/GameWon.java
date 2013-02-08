@@ -1,4 +1,4 @@
-package com.jayway.lab.structs.events;
+package com.jayway.rps.structs.events;
 
 import java.util.UUID;
 

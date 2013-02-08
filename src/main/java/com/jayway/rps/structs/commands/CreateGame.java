@@ -1,4 +1,4 @@
-package com.jayway.lab.structs.commands;
+package com.jayway.rps.structs.commands;
 
 import java.util.UUID;
 
