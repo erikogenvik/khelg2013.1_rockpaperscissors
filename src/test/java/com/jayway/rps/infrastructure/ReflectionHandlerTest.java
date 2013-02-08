@@ -20,7 +20,7 @@ public class ReflectionHandlerTest {
 
 		@CommandHandler
 		public List<? extends Event> handle(Integer c) throws Exception {
-			return new ArrayList<>();
+			return new ArrayList<Event>();
 		}
 
 	}
