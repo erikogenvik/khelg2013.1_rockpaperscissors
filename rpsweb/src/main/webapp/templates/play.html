@@ -7,8 +7,12 @@
 		<label for="gameUri">Game URI</label> <input ng-model="joinUri" />
 		<button id="btnJoinGame" ng-click="join()">Join game</button>
 	</div>
+	<div ng-show="playing">
+		Your score: {{yourScore}}<br/>
+		Their score: {{theirScore}}<br/>
+	</div>
 	<div ng-show="waitingForPlayer">
-		Waiting for second player. To joind, use url {{joinUri}}
+		Waiting for second player. To join, use url {{joinUri}}
 	</div>
 	<div ng-show="needToDeal">
 		<select id="choice" ng-model="choice">

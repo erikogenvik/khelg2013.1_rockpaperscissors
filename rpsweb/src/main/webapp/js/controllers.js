@@ -62,6 +62,8 @@ function RestrictedCtrl($scope, $http, $location) {
 
 
 function PlayCtrl($scope, $http, $timeout) {
+	$scope.state = "";
+	
     $scope.noGame = true;
     $scope.hasGame = false;
     $scope.waitingForPlayer=false;
@@ -69,7 +71,7 @@ function PlayCtrl($scope, $http, $timeout) {
     $scope.needToDeal = false;
     $scope.youWon = false;
     $scope.youLost = false;
-    
+    $scope.playing = false;
     
     
     $scope.getGameInfo = function() {
@@ -87,6 +89,7 @@ function PlayCtrl($scope, $http, $timeout) {
       function poll(){
     	  $http.get($scope.gameUri)
           .success(function (data, status, headers) {
+        	  $scope.playing = true;
         	  var me = data.me;
         	  if (data.details.player2Id == null) {
         		  $scope.waitingForPlayer = true;
@@ -102,6 +105,8 @@ function PlayCtrl($scope, $http, $timeout) {
         			  }
         		  } else {
                 	  if (me == data.details.player1Id) {
+                		  $scope.yourScore = data.details.player1Score;
+                		  $scope.theirScore = data.details.player2Score;
                 		  
                 		  if (!data.details.player1Dealt) {
                 			  $scope.needToDeal = true;
@@ -109,6 +114,9 @@ function PlayCtrl($scope, $http, $timeout) {
                 			  $scope.needToDeal = false;
                 		  }
                 	  } else {
+                		  $scope.yourScore = data.details.player2Score;
+                		  $scope.theirScore = data.details.player1Score;
+                		  
                 		  if (!data.details.player2Dealt) {
                 			  $scope.needToDeal = true;
                 		  } else {
