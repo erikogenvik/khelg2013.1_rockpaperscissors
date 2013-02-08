@@ -75,7 +75,7 @@ public class Game {
 		}
 
 		if (player2Id == null) {
-			return Arrays.asList(new GameStarted(id, player1Id, player2Id),
+			return Arrays.asList(new GameStarted(id, player1Id, c.playerId),
 					new RoundStarted(id));
 		}
 
@@ -88,6 +88,15 @@ public class Game {
 			player1Choice = e.choice;
 		} else {
 			player2Choice = e.choice;
+		}
+	}
+
+	@EventHandler
+	public void handle(RoundWon e) throws Exception {
+		if (e.playerWinner.equals(player1Id)) {
+			player1Wins++;
+		} else {
+			player2Wins++;
 		}
 	}
 
