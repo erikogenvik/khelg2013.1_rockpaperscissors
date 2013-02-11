@@ -2,12 +2,14 @@
 	<h1>Play game!</h1>
 
 	<div ng-show="noGame">
+		<label for="roundsToWin">Number of rounds:</label><input ng-model="roundsToWin" id="roundsToWin"/>
 		<button id="btnCreateGame" ng-click="createGame()">Create
 			Game</button>
 		<label for="gameUri">Game URI</label> <input ng-model="joinUri" />
 		<button id="btnJoinGame" ng-click="join()">Join game</button>
 	</div>
 	<div ng-show="playing">
+		Playing against: {{otherPlayer}}<br/>
 		Your score: {{yourScore}}<br/>
 		Their score: {{theirScore}}<br/>
 	</div>

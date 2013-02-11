@@ -72,6 +72,7 @@ function PlayCtrl($scope, $http, $timeout) {
     $scope.youWon = false;
     $scope.youLost = false;
     $scope.playing = false;
+    $scope.roundsToWin = 2;
     
     
     $scope.getGameInfo = function() {
@@ -105,6 +106,7 @@ function PlayCtrl($scope, $http, $timeout) {
         			  }
         		  } else {
                 	  if (me == data.details.player1Id) {
+                		  $scope.otherPlayer = data.details.player2Id;
                 		  $scope.yourScore = data.details.player1Score;
                 		  $scope.theirScore = data.details.player2Score;
                 		  
@@ -114,6 +116,7 @@ function PlayCtrl($scope, $http, $timeout) {
                 			  $scope.needToDeal = false;
                 		  }
                 	  } else {
+                		  $scope.otherPlayer = data.details.player1Id;
                 		  $scope.yourScore = data.details.player2Score;
                 		  $scope.theirScore = data.details.player1Score;
                 		  
@@ -139,7 +142,7 @@ function PlayCtrl($scope, $http, $timeout) {
     
     $scope.createGame = function()
     {
-    	var xsrf = $.param({firstTo: 2});
+    	var xsrf = $.param({firstTo: $scope.roundsToWin});
         $http.post("/api/games",xsrf , {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
         .success(function (data, status, headers) {
         	$scope.hasGame = true;
